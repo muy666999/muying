@@ -13,7 +13,7 @@
 </head>
 <body>
 <section id="main">
-    <video id="player" src="http://v.nrzj.vip/video.php?_t=0.07960376468261965" controls webkit-playsinline playsinline></video>
+    <video id="player" controls webkit-playsinline playsinline></video>
 </section>
 <section id="buttons">
     <button id="switch">连续：开</button>
@@ -21,14 +21,6 @@
 </section>
 
 <script>
-// 首次访问检查和提示
-(function() {
-    if (!localStorage.getItem('hasVisited')) {
-        alert('友情提示：各位道友注意节制');
-        localStorage.setItem('hasVisited', 'true');
-    }
-})();
-
 // 原有的视频播放功能
 (function (window, document) {
     if (top != self) {
@@ -57,6 +49,19 @@
     bind(player, 'ended', function () {
         if (auto) randomm();
     });
+
+    // 首次访问提示 + 提示关闭后自动播放
+    (function() {
+        if (!localStorage.getItem('hasVisited')) {
+            alert('友情提示：各位道友注意节制（第一次进入手动播放）');
+            localStorage.setItem('hasVisited', 'true');
+            // 提示关闭后执行播放
+            randomm();
+        } else {
+            // 不是首次访问，直接播放
+            randomm();
+        }
+    })();
 })(window, document);
 </script>
 </body>
