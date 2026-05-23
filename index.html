@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沐樱的网站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F8BBD0',
+                        dark: '#424242',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-dark">
+    <!-- 顶部标题 -->
+    <div class="py-10 text-center">
+        <h1 class="text-3xl font-bold text-primary">🌸 沐樱的网站</h1>
+        <p class="mt-2 text-gray-500">点击下方链接进入对应页面</p>
+    </div>
+
+    <!-- 竖排链接区域 -->
+    <div class="max-w-md mx-auto px-4 pb-10">
+        <div class="bg-white rounded-lg shadow-sm p-4 space-y-3">
+            <a href="Dodge the Ice Cubes/Dodge the Ice Cubes.html" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-5 py-4 transition">
+                <i class="fa fa-snowflake-o mr-2"></i> 小游戏：躲避冰块
+            </a>
+            <a href="2048/2048.html" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-5 py-4 transition">
+                <i class="fa fa-th mr-2"></i> 小游戏：2048
+            </a>
+            <!-- 可以在这里继续添加更多链接 -->
+        </div>
+    </div>
+
+    <!-- 底部联系信息（字号缩小，和版权信息风格统一） -->
+    <div class="text-center text-gray-400 text-sm pb-8 space-y-1">
+        <p class="flex items-center justify-center">
+          <span>邮箱：1536737902@qq.com</span>
+        </p>
+        <p class="flex items-center justify-center">
+            <span>QQ：1536737902</span>
+        </p>
+    </div>
+
+    <!-- 版权信息 -->
+    <div class="text-center text-gray-400 text-sm pb-6">
+        © 2025 沐樱的网站
+    </div>
+</body>
+</html>
