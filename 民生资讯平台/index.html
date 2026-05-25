@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>民生资讯综合平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: #094c9c;
+            color: #fff;
+            padding: 24px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .main-title i {
+            margin-right: 10px;
+        }
+        .time-box {
+            font-size: 17px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        /* 🔥 这里放大了卡片、图片、点击区域 */
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 35px;
+            margin: 40px 0;
+        }
+        .link-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .link-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+        }
+        /* 🔥 图片高度大幅加大 */
+        .link-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+        .link-card .card-content {
+            padding: 30px;
+        }
+        .link-card h3 {
+            font-size: 26px;
+            color: #094c9c;
+            margin-bottom: 12px;
+        }
+        .link-card p {
+            font-size: 18px;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #777;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <div class="main-title"><i class="fas fa-broadcast-tower"></i>民生资讯综合平台</div>
+        <div class="time-box" id="showtime"></div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="link-grid">
+        <!-- 政府卡片 -->
+        <div class="link-card" onclick="window.open('https://www.gov.cn', '_blank')">
+            <img src="https://ts2.tc.mm.bing.net/th/id/OIP-C.G2FhaSd2FgsZwGXPHrAYYgHaE0?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="中国政府网">
+            <div class="card-content">
+                <h3>中国政府网</h3>
+                <p>国家政务动态、惠民政策、政务服务官方入口</p>
+            </div>
+        </div>
+
+        <!-- 天气卡片 -->
+        <div class="link-card" onclick="window.open('http://www.nmc.cn/', '_blank')">
+            <img src="https://n.sinaimg.cn/sinakd20221002s/239/w640h399/20221002/8b36-ac303bff8c6448f30eaeee3bf53b629f.png" alt="中央气象台">
+            <div class="card-content">
+                <h3>中央气象台</h3>
+                <p>全国实时天气、气象预警、出行气象权威播报</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    政务资讯 · 气象播报 | 便民服务平台
+</footer>
+
+<script>
+function showTime() {
+    let d = new Date();
+    document.getElementById("showtime").innerHTML = d.toLocaleString("zh-CN");
+}
+setInterval(showTime, 1000);
+showTime();
+</script>
+
+</body>
+</html>
