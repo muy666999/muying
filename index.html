@@ -21,7 +21,6 @@
         }
     </script>
     <style>
-        /* 飘屏固定在最顶端 */
         .marquee-container {
             position: fixed;
             top: 0;
@@ -38,7 +37,6 @@
             display: inline-block;
             will-change: transform;
         }
-        /* 内容区往下移，避免被飘屏挡住 */
         body {
             padding-top: 30px;
         }
@@ -46,7 +44,6 @@
 </head>
 
 <body class="bg-gray-50 text-dark">
-<!-- 飘屏 -->
 <div class="marquee-container">
   <div id="marqueeText" class="marquee-text text-sm text-dark font-medium"></div>
 </div>
@@ -87,12 +84,11 @@ function startMarquee(text) {
 window.onload = loadQuote;
 </script>
 
-<!-- 标题 -->
 <div class="py-6 text-center">
     <h1 class="text-3xl font-bold text-primary">🌸 沐樱的网站</h1>
 </div>
 
-<!-- 顶部导航（图标在上，文字在下） -->
+<!-- 导航按钮尺寸复原不变 -->
 <div class="max-w-md mx-auto px-4 mb-6">
     <div class="grid grid-cols-4 gap-2 text-sm">
         <button onclick="showAll()" class="nav-btn bg-primary text-white py-2 rounded-lg font-medium flex flex-col items-center">
@@ -114,11 +110,10 @@ window.onload = loadQuote;
     </div>
 </div>
 
-<!-- 内容区域 -->
-<div class="max-w-md mx-auto px-4 pb-10">
-    <!-- 主页全部内容统一大框 -->
+<!-- 内容区电脑宽屏一行4个，手机2个 -->
+<div class="max-w-md md:max-w-4xl mx-auto px-4 pb-10">
     <div id="allBox" class="bg-white rounded-xl shadow-md p-5">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="game/躲避冰块/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
                 <i class="fa fa-snowflake-o text-lg block mb-1"></i>
                 <span class="text-sm">躲避冰块</span>
@@ -146,9 +141,8 @@ window.onload = loadQuote;
         </div>
     </div>
 
-    <!-- 娱乐单独框 -->
     <div id="gameBox" class="hidden bg-white rounded-xl shadow-md p-5 mt-4">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="game/躲避冰块/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
                 <i class="fa fa-snowflake-o text-lg block mb-1"></i>
                 <span class="text-sm">躲避冰块</span>
@@ -168,9 +162,8 @@ window.onload = loadQuote;
         </div>
     </div>
 
-    <!-- 艺术单独框 -->
     <div id="artBox" class="hidden bg-white rounded-xl shadow-md p-5 mt-4">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="https://hanmuying.github.io/I-miss-you/" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
                 <i class="fa fa-paint-brush text-lg block mb-1"></i>
                 <span class="text-sm">I miss you</span>
@@ -178,9 +171,8 @@ window.onload = loadQuote;
         </div>
     </div>
 
-    <!-- 工具单独框 -->
     <div id="toolBox" class="hidden bg-white rounded-xl shadow-md p-5 mt-4">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="物探工具箱/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
                 <i class="fa fa-calculator text-lg block mb-1"></i>
                 <span class="text-sm">仪器地标计算</span>
@@ -238,15 +230,14 @@ function showTool() {
 showAll();
 </script>
 
-<!-- 底部内容 -->
-<div class="max-w-md mx-auto px-4 pb-4">
+<div class="max-w-md md:max-w-4xl mx-auto px-4 pb-4">
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center text-yellow-700 text-sm">
         <i class="fa fa-exclamation-triangle mr-1"></i>
         本站因免费搭建，可能反应较慢或无响应，请稍等或重试
     </div>
 </div>
 
-<div class="max-w-md mx-auto px-4 pb-8">
+<div class="max-w-md md:max-w-4xl mx-auto px-4 pb-8">
     <div class="bg-gray-100 rounded-lg p-4 text-xs text-gray-500 leading-relaxed">
         <h3 class="font-semibold text-gray-600 mb-2">网站免责声明</h3>
         <p>本网站致力于提供合理、准确、完整的信息，但不保证信息的合理性、完整性和准确性，且不对因信息传递或传送的失误、不准确或错误对用户或任何其他人士负任何直接或间接的责任。本网站有部分资料取自互联网，该部分资料的版权归版权所有人所有，本网站采用的资料信息无法一一和版权者联系，如果本网站所选资料信息的版权所有人认为其作品不宜在网上供公众浏览，或不应无偿使用的，请及时用电子邮件或电话通知我们，以迅速采取适当措施，避免给双方造成不必要的经济损失。本网站所刊发、转载的文章，其版权均归原作者所有，并不代表本网赞同其观点和对其真实性、科学性、严肃性负责；附带版权声明的文章，其版权以附带的版权声明为准。</p>
