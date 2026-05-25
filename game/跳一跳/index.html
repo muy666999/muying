@@ -10,19 +10,19 @@
 
     .top-restart {
       position: fixed;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 8px 28px;
-      border-radius: 50px;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 18px 0;
+      border-radius: 0;
       background: #e8f0fe;
       color: #4080ff;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 500;
       border: none;
       cursor: pointer;
       z-index: 9999;
-      box-shadow: 0 2px 8px rgba(64,128,255,0.15);
+      box-shadow: 0 -2px 8px rgba(64,128,255,0.15);
       transition: 0.2s;
     }
     .top-restart:hover {
@@ -44,18 +44,15 @@ const startAudio = new Audio("qibu.MP3");
 const loopAudio = new Audio("xunhuan.MP3");
 const endAudio = new Audio("jieshu.MP3");
 loopAudio.loop = true;
-// 预加载
 startAudio.load();
 loopAudio.load();
 endAudio.load();
 
 let isPressing = false;
 
-// 按下动作
 function pressStart() {
   if(isPressing) return;
   isPressing = true;
-  // 重置音源
   startAudio.pause();
   startAudio.currentTime = 0;
   startAudio.play().catch(()=>{});
@@ -68,7 +65,6 @@ function pressStart() {
   }
 }
 
-// 松开动作
 function pressEnd() {
   if(!isPressing) return;
   isPressing = false;
@@ -80,12 +76,10 @@ function pressEnd() {
   endAudio.play().catch(()=>{});
 }
 
-// 鼠标监听
 document.addEventListener('mousedown', pressStart);
 document.addEventListener('mouseup', pressEnd);
 document.addEventListener('mouseleave', pressEnd);
 
-// 触屏监听
 document.addEventListener('touchstart', e=>{
   e.preventDefault();
   pressStart();
