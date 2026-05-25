@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沐樱的网站</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F8BBD0',
+                        dark: '#424242',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 修复飘屏容器样式 */
+        .marquee-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background-color: rgba(248, 187, 208, 0.2);
+            padding: 8px 0;
+        }
+        .marquee-text {
+            position: relative;
+            white-space: nowrap;
+            display: inline-block;
+            left: 0;
+            will-change: transform;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-dark">
+
+<!-- ====================== 修正版每日激励飘屏 ====================== -->
+<div class="marquee-container">
+  <div id="marqueeText" class="marquee-text text-sm text-dark font-medium"></div>
+</div>
+
+<script>
+// 获取今天是本年第几天（1.1=1，1.2=2 ... 12.31=365）
+function getDayOfYear() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const diff = now - start;
+  const oneDay = 86400 * 1000;
+  return Math.floor(diff / oneDay) + 1;
+}
+
+// 加载对应天数文案
+async function loadQuote() {
+  const day = getDayOfYear();
+  const path = `激励文案/${day}.txt`;
+
+  try {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error("文件不存在");
+    const text = await res.text();
+    startMarquee(text.trim());
+  } catch (e) {
+    console.error("加载文案失败:", e);
+    startMarquee("🌸 每天进步一点点，成为更好的自己");
+  }
+}
+
+// 修正版飘屏动画（使用transform，更稳定、更流畅）
+function startMarquee(text) {
+  const el = document.getElementById("marqueeText");
+  el.innerText = text;
+
+  let x = window.innerWidth;
+  const speed = 0.3; // 更慢的速度，根据需要调整 0.2~0.8
+
+  function animate() {
+    x -= speed;
+    if (x < -el.offsetWidth) {
+      x = window.innerWidth;
+    }
+    el.style.transform = `translateX(${x}px)`;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// 启动
+window.onload = loadQuote;
+</script>
+<!-- ====================== 飘屏结束 ====================== -->
+
+    <!-- 顶部标题 -->
+    <div class="py-10 text-center">
+        <h1 class="text-3xl font-bold text-primary">🌸 沐樱的网站</h1>
+        <p class="mt-2 text-gray-500">点击下方链接进入对应页面</p>
+    </div>
+
+    <!-- 主展出分类区 -->
+    <div class="max-w-md mx-auto px-4 pb-10 space-y-6">
+        <!-- 娱乐展区 -->
+        <div class="bg-white rounded-xl shadow-md p-5">
+            <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                <span class="text-xl">🎮</span>
+                <h2 class="text-lg font-semibold text-gray-700">娱乐专区</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="game/躲避冰块/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-snowflake-o text-lg block mb-1"></i>
+                    <span class="text-sm">躲避冰块</span>
+                </a>
+                <a href="game/2048/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-th text-lg block mb-1"></i>
+                    <span class="text-sm">2048小游戏</span>
+                </a>
+                <a href="video/美女视频/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-play text-lg block mb-1"></i>
+                    <span class="text-sm">美女视频</span>
+                </a>
+                <a href="https://hanmuying.github.io/ai-kun" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-volume-up text-lg block mb-1"></i>
+                    <span class="text-sm">鸡乐盒</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 艺术展区 -->
+        <div class="bg-white rounded-xl shadow-md p-5">
+            <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                <span class="text-xl">🎨</span>
+                <h2 class="text-lg font-semibold text-gray-700">艺术专区</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://hanmuying.github.io/I-miss-you/" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-paint-brush text-lg block mb-1"></i>
+                    <span class="text-sm">I miss you</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 工具展区 -->
+        <div class="bg-white rounded-xl shadow-md p-5">
+            <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                <span class="text-xl">🔧</span>
+                <h2 class="text-lg font-semibold text-gray-700">工具专区</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="物探工具箱/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                    <i class="fa fa-calculator text-lg block mb-1"></i>
+                    <span class="text-sm">仪器地标计算</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 网站加载提示 -->
+    <div class="max-w-md mx-auto px-4 pb-4">
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center text-yellow-700 text-sm">
+            <i class="fa fa-exclamation-triangle mr-1"></i>
+            本站因免费搭建，可能反应较慢或无响应，请稍等或重试
+        </div>
+    </div>
+
+    <!-- 免责声明 -->
+    <div class="max-w-md mx-auto px-4 pb-8">
+        <div class="bg-gray-100 rounded-lg p-4 text-xs text-gray-500 leading-relaxed">
+            <h3 class="font-semibold text-gray-600 mb-2">网站免责声明</h3>
+            <p>本网站致力于提供合理、准确、完整的信息，但不保证信息的合理性、完整性和准确性，且不对因信息传递或传送的失误、不准确或错误对用户或任何其他人士负任何直接或间接的责任。本网站有部分资料取自互联网，该部分资料的版权归版权所有人所有，本网站采用的资料信息无法一一和版权者联系，如果本网站所选资料信息的版权所有人认为其作品不宜在网上供公众浏览，或不应无偿使用的，请及时用电子邮件或电话通知我们，以迅速采取适当措施，避免给双方造成不必要的经济损失。本网站所刊发、转载的文章，其版权均归原作者所有，并不代表本网赞同其观点和对其真实性、科学性、严肃性负责；附带版权声明的文章，其版权以附带的版权声明为准。</p>
+            <p class="mt-2">本网站所有信息仅供参考，不做交易和服务的根据，如自行使用本网站资料发生偏差，无论在任何原因下（包括但不限于疏忽原因），对您或任何人通过使用本网站上的信息或由本网站链接的信息，或其他与本网站链接的网站信息所导致的损失或损害（包括直接、间接、特别或后果性的损失或损害，例如收入或利润之损失，电脑系统之损坏或数据丢失等后果），责任均由使用者自行承担（包括但不限于疏忽责任），本网站概不负责，亦不负任何法律责任。</p>
+            <p class="mt-2">本网站刊载各类信息时会选用一些介绍参展企业、组织、团体，及行业相关信息的文章、图片等资料，被选用的文章、图片等资料的作者，如不宜公知或不应无偿使用的，恳请及时与我们联系，我们将予以当即删除等妥当处理。一些单位、部门或个人需要使用、转载、复制使用、发表本网站上的文字图片等资料时，必须直接与作者联系征得同意，否则应自负版权等法律责任。</p>
+            <p class="mt-2">任何由于黑客攻击、计算机病毒侵入或发作、因政府管制而造成的暂时性关闭等影响网络正常经营的不可抗力而造成的损失，本网站均得免责。因和本网站链接的其它网站所造成的个人资料泄露及由此而导致的任何法律争议和后果，本网站均得免责。</p>
+            <p class="mt-2">本网站使用者因为违反本声明的规定而触犯中华人民共和国法律的，一切后果自己负责，本网站不承担任何责任。凡以任何方式登陆本网站或直接、间接使用本网站资料者，视为自愿接受本网站声明的约束。本声明未涉及的问题参见国家有关法律法规，当本声明与国家法律法规冲突时，以国家法律法规为准。本网站如无意中侵犯了某个媒体或个人的知识产权，请来信或来电告之，本网站将立即删除。沐樱私人网站就上述声明在法律规定的范围内享有解释权。</p>
+            <p class="mt-2 text-right">邮箱:1536737902@qq.com</p>
+        </div>
+    </div>
+
+    <!-- 底部联系信息 -->
+    <div class="text-center text-gray-400 text-sm pb-8 space-y-1">
+        <p class="flex items-center justify-center">
+          <span>邮箱：1536737902@qq.com</span>
+        </p>
+        <p class="flex items-center justify-center">
+            <span>QQ：1536737902</span>
+        </p>
+    </div>
+
+    <!-- 版权信息 -->
+    <div class="text-center text-gray-400 text-sm pb-6">
+        © 2025 沐樱的网站
+    </div>
+</body>
+</html>
