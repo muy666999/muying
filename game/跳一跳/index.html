@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>跳一跳 Demo</title>
-  <!-- 关键：加 viewport-fit=cover -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     * {margin: 0; padding: 0; box-sizing: border-box;}
@@ -11,20 +10,26 @@
 
     .top-restart {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      /* 重点：自动避开 iOS/安卓底部安全区 */
-      padding: 18px 0 calc(18px + env(safe-area-inset-bottom, 0px));
-      border-radius: 0;
+      /* 改回中下方位置 */
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      /* 保持超短宽度 */
+      width: 25%;
+      padding: 10px 0;
+      border-radius: 50px;
       background: #e8f0fe;
       color: #4080ff;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
       border: none;
       cursor: pointer;
       z-index: 9999;
-      box-shadow: 0 -2px 8px rgba(64,128,255,0.15);
+      box-shadow: 0 2px 8px rgba(64,128,255,0.15);
+      transition: 0.2s;
+    }
+    .top-restart:hover {
+      background: #d7e4fb;
     }
   </style>
 </head>
@@ -37,6 +42,7 @@ function restartGame(){
   location.reload();
 }
 
+// 初始化音频
 const startAudio = new Audio("qibu.MP3");
 const loopAudio = new Audio("xunhuan.MP3");
 const endAudio = new Audio("jieshu.MP3");
