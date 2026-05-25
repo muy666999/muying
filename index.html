@@ -21,18 +21,26 @@
         }
     </script>
     <style>
+        /* 飘屏固定在最顶端 */
         .marquee-container {
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            overflow: hidden;
+            z-index: 9999;
             background-color: rgba(248, 187, 208, 0.2);
             padding: 8px 0;
+            overflow: hidden;
         }
         .marquee-text {
             position: relative;
             white-space: nowrap;
             display: inline-block;
             will-change: transform;
+        }
+        /* 内容区往下移，避免被飘屏挡住 */
+        body {
+            padding-top: 30px;
         }
     </style>
 </head>
