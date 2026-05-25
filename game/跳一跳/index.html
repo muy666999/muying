@@ -32,11 +32,69 @@
 </head>
 <body>
 <button class="top-restart" onclick="restartGame()">🔄 再来一次</button>
+
 <script src="main.d0b7f22153f91844d442.js"></script>
 <script>
 function restartGame(){
   location.reload();
 }
+
+// 初始化音频
+const startAudio = new Audio("qibu.MP3");
+const loopAudio = new Audio("xunhuan.MP3");
+const endAudio = new Audio("jieshu.MP3");
+loopAudio.loop = true;
+// 预加载
+startAudio.load();
+loopAudio.load();
+endAudio.load();
+
+let isPressing = false;
+
+// 按下动作
+function pressStart() {
+  if(isPressing) return;
+  isPressing = true;
+  // 重置音源
+  startAudio.pause();
+  startAudio.currentTime = 0;
+  startAudio.play().catch(()=>{});
+
+  startAudio.onended = function(){
+    if(!isPressing) return;
+    loopAudio.pause();
+    loopAudio.currentTime = 0;
+    loopAudio.play().catch(()=>{});
+  }
+}
+
+// 松开动作
+function pressEnd() {
+  if(!isPressing) return;
+  isPressing = false;
+  startAudio.pause();
+  loopAudio.pause();
+  startAudio.currentTime = 0;
+  loopAudio.currentTime = 0;
+  endAudio.currentTime = 0;
+  endAudio.play().catch(()=>{});
+}
+
+// 鼠标监听
+document.addEventListener('mousedown', pressStart);
+document.addEventListener('mouseup', pressEnd);
+document.addEventListener('mouseleave', pressEnd);
+
+// 触屏监听
+document.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  pressStart();
+});
+document.addEventListener('touchend', e=>{
+  e.preventDefault();
+  pressEnd();
+});
+document.addEventListener('touchcancel', pressEnd);
 </script>
 </body>
 </html>
