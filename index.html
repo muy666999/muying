@@ -89,7 +89,7 @@ window.onload = loadQuote;
 </div>
 
 <div class="max-w-md mx-auto px-4 mb-6">
-    <div class="grid grid-cols-4 gap-2 text-sm">
+    <div class="grid grid-cols-5 gap-2 text-sm">
         <button onclick="showAll()" class="nav-btn bg-primary text-white py-2 rounded-lg font-medium flex flex-col items-center">
             <i class="fa fa-home text-blue-500 text-xl"></i>
             <span>主页</span>
@@ -105,6 +105,11 @@ window.onload = loadQuote;
         <button onclick="showTool()" class="nav-btn bg-gray-200 py-2 rounded-lg font-medium flex flex-col items-center">
             <span class="text-xl">🔧</span>
             <span>工具区</span>
+        </button>
+        <!-- 🔥 新增：生活区 -->
+        <button onclick="showLife()" class="nav-btn bg-gray-200 py-2 rounded-lg font-medium flex flex-col items-center">
+            <span class="text-xl">🏠</span>
+            <span>生活区</span>
         </button>
     </div>
 </div>
@@ -139,6 +144,11 @@ window.onload = loadQuote;
             <a href="物探工具箱/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
                 <i class="fa fa-calculator text-lg block mb-1"></i>
                 <span class="text-sm">仪器地标计算</span>
+            </a>
+            <!-- 🔥 主页显示生活区入口 -->
+            <a href="民生资讯平台/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                <i class="fa fa-newspaper-o text-lg block mb-1"></i>
+                <span class="text-sm">民生资讯</span>
             </a>
         </div>
     </div>
@@ -185,6 +195,16 @@ window.onload = loadQuote;
             </a>
         </div>
     </div>
+
+    <!-- 🔥 新增：生活区 → 民生资讯平台 -->
+    <div id="lifeBox" class="hidden bg-white rounded-xl shadow-md p-5 mt-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <a href="民生资讯平台/index.html" target="_blank" class="block bg-gray-100 hover:bg-primary/10 rounded-lg px-4 py-3 text-center transition">
+                <i class="fa fa-newspaper-o text-lg block mb-1"></i>
+                <span class="text-sm">民生资讯平台</span>
+            </a>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -192,6 +212,7 @@ const allBox = document.getElementById('allBox');
 const gameBox = document.getElementById('gameBox');
 const artBox = document.getElementById('artBox');
 const toolBox = document.getElementById('toolBox');
+const lifeBox = document.getElementById('lifeBox');
 const btns = document.querySelectorAll('.nav-btn');
 
 function resetBtn() {
@@ -208,6 +229,7 @@ function showAll() {
     gameBox.style.display = 'none';
     artBox.style.display = 'none';
     toolBox.style.display = 'none';
+    lifeBox.style.display = 'none';
 }
 function showGame() {
     resetBtn();
@@ -216,6 +238,7 @@ function showGame() {
     gameBox.style.display = 'block';
     artBox.style.display = 'none';
     toolBox.style.display = 'none';
+    lifeBox.style.display = 'none';
 }
 function showArt() {
     resetBtn();
@@ -224,6 +247,7 @@ function showArt() {
     gameBox.style.display = 'none';
     artBox.style.display = 'block';
     toolBox.style.display = 'none';
+    lifeBox.style.display = 'none';
 }
 function showTool() {
     resetBtn();
@@ -232,6 +256,17 @@ function showTool() {
     gameBox.style.display = 'none';
     artBox.style.display = 'none';
     toolBox.style.display = 'block';
+    lifeBox.style.display = 'none';
+}
+// 🔥 生活区显示
+function showLife() {
+    resetBtn();
+    btns[4].classList.add('bg-primary', 'text-white');
+    allBox.style.display = 'none';
+    gameBox.style.display = 'none';
+    artBox.style.display = 'none';
+    toolBox.style.display = 'none';
+    lifeBox.style.display = 'block';
 }
 showAll();
 </script>
