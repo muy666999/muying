@@ -3,22 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <title>五子棋</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style>
-  body {
-    background: #0a0a0a;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    padding: 0;
+  * {
     margin: 0;
-    user-select: none;
-    overflow-x: hidden;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
   }
 
-  /* 粒子容器修复：限定范围，禁止顶部溢出 */
+  body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    font-family: sans-serif;
+    text-align: center;
+    user-select: none;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
   .particles {
     position: fixed;
     top: 0;
@@ -27,475 +33,187 @@
     height: 100%;
     pointer-events: none;
     z-index: -1;
-    overflow: hidden; /* 隐藏跑出容器的粒子 */
+    overflow: hidden;
   }
   
   .particle {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255, 77, 77, 0.5);
+    width: 3px;
+    height: 3px;
+    background: rgba(255,77,77,0.4);
     border-radius: 50%;
-    /* 起始位置从屏幕中部开始，不从顶部出现 */
     top: 100%;
-    animation: float 15s infinite linear;
+    animation: float 12s infinite linear;
   }
   
   @keyframes float {
-    0% {
-      transform: translateY(0) translateX(0);
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100vh) translateX(80px);
-      opacity: 0;
-    }
+    0% { transform: translateY(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh); opacity: 0; }
   }
-  
-  .container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .header {
-    padding: 15px 0;
-    margin-bottom: 20px;
-  }
-  
-  h1 {
-    font-size: 32px;
-    margin: 0;
+
+  .title {
+    font-size: 22px;
     color: #ff4d4d;
-    text-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
-    letter-spacing: 2px;
-    position: relative;
-    display: inline-block;
-  }
-  
-  h1::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 10%;
-    width: 80%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ff4d4d, transparent);
+    margin-bottom: 12px;
+    text-shadow: 0 0 10px #ff4d4d;
   }
 
   #board {
+    width: 90vw;
+    max-width: 380px;
+    height: 90vw;
+    max-height: 380px;
     background: #e3cd96;
-    display: block;
-    margin: 0 auto;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-    cursor: pointer;
-    border-radius: 4px;
+    border-radius: 6px;
+    touch-action: manipulation;
   }
 
-  .controls {
-    margin-top: 25px;
-  }
-  
-  button {
-    padding: 12px 25px;
-    border-radius: 6px;
+  .btn-restart {
+    margin-top: 16px;
+    padding: 10px 22px;
+    background: #10b981;
+    color: white;
     border: none;
-    background: linear-gradient(135deg, #10b981, #047857);
-    color: #fff;
+    border-radius: 8px;
+    font-size: 15px;
     font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  }
-  
-  button:active {
-    transform: translateY(0);
   }
 
   .win-animation {
-    animation: win 0.5s ease-out;
+    animation: win 0.5s;
   }
-  
+
   @keyframes win {
     0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.04); }
     100% { transform: scale(1); }
   }
 </style>
 </head>
+
 <body>
-  <div class="particles" id="particles"></div>
+<div class="particles" id="particles"></div>
 
-  <div class="container">
-    <div class="header">
-      <h1>五子棋</h1>
-    </div>
-
-    <canvas id="board" width="450" height="450"></canvas>
-    
-    <div class="controls">
-      <button id="btnRestart">重新开始</button>
-    </div>
-  </div>
+<div class="title">五子棋</div>
+<canvas id="board"></canvas>
+<button class="btn-restart" id="restart">重新开始</button>
 
 <script>
-(function(){
 const SIZE = 15;
-const CELL = 30;
+let canvas = document.getElementById('board');
+let ctx = canvas.getContext('2d');
+let restartBtn = document.getElementById('restart');
+let particles = document.getElementById('particles');
 
-const AI_CONFIG = {
-  timeLimit: 800,
-  maxDepth: 4,
-  searchCount: 10,
-  useKillerHeuristic: true,
-  useTranspositionTable: true,
-  useHistoryHeuristic: true,
-  useThreatDetection: true,
-  threatResponseMultiplier: 1,
-  threatThreshold: 3
-};
+let board, over, myTurn, winLine;
 
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
-const btnRestart = document.getElementById('btnRestart');
-const particlesContainer = document.getElementById('particles');
-
-let board = [];   
-let history = []; 
-let over = false;
-let myTurn = true;
-let winLine = [];
-
-let deadline = 0;
-let isTimeout = false;
-let totalNodes = 0;
-let currentDepth = 0;
-
-let transpositionTable = {};
-let killerMoves = Array.from({length: 20}, () => [null, null]);
-let historyTable = Array.from({length: SIZE}, () => Array(SIZE).fill(0));
-
-const SCORE = {
-  FIVE: 100000,
-  FOUR_LIVE: 10000,
-  FOUR_DEAD: 1000,
-  THREE_LIVE: 1000,
-  THREE_DEAD: 100,
-  TWO_LIVE: 100,
-  TWO_DEAD: 10,
-  ONE: 1,
-};
-
-function inBoard(x,y){ return x>=0 && x<SIZE && y>=0 && y<SIZE; }
-
-function checkWin(x,y,role, bd){
-  const ds = [[1,0],[0,1],[1,1],[1,-1]];
-  for(const d of ds){
-    let count = 1;
-    for(let i=1;i<5;i++){
-      const nx=x+d[0]*i, ny=y+d[1]*i;
-      if(inBoard(nx,ny) && bd[nx][ny]===role) count++; else break;
-    }
-    for(let i=1;i<5;i++){
-      const nx=x-d[0]*i, ny=y-d[1]*i;
-      if(inBoard(nx,ny) && bd[nx][ny]===role) count++; else break;
-    }
-    if(count>=5) return true;
-  }
-  return false;
+function resizeCanvas() {
+  let size = Math.min(380, window.innerWidth * 0.9);
+  canvas.width = size;
+  canvas.height = size;
+  window.CELL = size / SIZE;
+  draw();
 }
 
-function evalDirection(x, y, dx, dy, role) {
-  let count = 1;
-  let empty = 0;
-  let block = 0;
-  
-  for(let i=1; i<=4; i++) {
-    const nx = x + dx*i, ny = y + dy*i;
-    if(!inBoard(nx,ny)) { block++; break; }
-    if(board[nx][ny] === role) count++;
-    else if(board[nx][ny] === 0) { empty++; break; }
-    else { block++; break; }
-  }
-  for(let i=1; i<=4; i++) {
-    const nx = x - dx*i, ny = y - dy*i;
-    if(!inBoard(nx,ny)) { block++; break; }
-    if(board[nx][ny] === role) count++;
-    else if(board[nx][ny] === 0) { empty++; break; }
-    else { block++; break; }
-  }
-  
-  if(count >=5) return SCORE.FIVE;
-  if(count ===4) {
-    if(empty >=1) return SCORE.FOUR_LIVE;
-    return SCORE.FOUR_DEAD;
-  }
-  if(count ===3) {
-    if(empty >=2) return SCORE.THREE_LIVE;
-    return SCORE.THREE_DEAD;
-  }
-  if(count ===2) {
-    if(empty >=2) return SCORE.TWO_LIVE;
-    return SCORE.TWO_DEAD;
-  }
-  return 0;
+function init() {
+  board = Array.from({length:SIZE},()=>Array(SIZE).fill(0));
+  over = false;
+  myTurn = true;
+  winLine = [];
+  draw();
 }
 
-function evalPoint(x, y, role) {
-  if(board[x][y] !== 0) return 0;
-  let score = 0;
+function inBoard(x,y) { return x>=0&&x<SIZE&&y>=0&&y<SIZE; }
+
+function checkWin(x,y,role) {
   const dirs = [[1,0],[0,1],[1,1],[1,-1]];
-  for(const d of dirs) score += evalDirection(x,y,d[0],d[1],role);
-  
-  const opp = role===1?2:1;
-  for(const d of dirs) score += evalDirection(x,y,d[0],d[1],opp) * 0.8;
-  
-  const cx = Math.abs(x-7), cy = Math.abs(y-7);
-  score += (10 - cx - cy);
-  return score;
-}
-
-function evaluateBoard(role) {
-  let s = 0;
-  for(let x=0;x<SIZE;x++){
-    for(let y=0;y<SIZE;y++){
-      if(board[x][y] === role) s += evalPoint(x,y,role);
-      else if(board[x][y] !==0) s -= evalPoint(x,y,3-role);
-    }
-  }
-  return s;
-}
-
-function getCandidates(role) {
-  let c = [];
-  let has = false;
-  for(let i=0;i<SIZE;i++)for(let j=0;j<SIZE;j++)if(board[i][j]!==0){has=true;break;}
-  if(!has) return [{x:7,y:7,s:999}];
-  
-  let v = new Set();
-  for(let x=0;x<SIZE;x++){
-    for(let y=0;y<SIZE;y++){
-      if(board[x][y]!==0){
-        for(let dx=-1;dx<=1;dx++){
-          for(let dy=-1;dy<=1;dy++){
-            let nx=x+dx, ny=y+dy;
-            if(inBoard(nx,ny)&&board[nx][ny]===0&&!v.has(nx+','+ny)){
-              v.add(nx+','+ny);
-              let sc = evalPoint(nx,ny,role);
-              c.push({x:nx,y:ny,s:sc});
-            }
-          }
-        }
-      }
-    }
-  }
-  return c.sort((a,b)=>b.s-a.s);
-}
-
-function negamax(depth, alpha, beta, role) {
-  totalNodes++;
-  if((totalNodes&255)===0 && Date.now()>deadline){isTimeout=true;return 0;}
-  
-  let hash = createBoardHash();
-  if(transpositionTable[hash]){
-    let e=transpositionTable[hash];
-    if(e.d>=depth){
-      if(e.f==='exact')return e.v;
-      if(e.f==='low')alpha=Math.max(alpha,e.v);
-      else beta=Math.min(beta,e.v);
-      if(alpha>=beta)return e.v;
-    }
-  }
-  
-  if(depth<=0) return evaluateBoard(role);
-  let cands = getCandidates(role);
-  let cnt = Math.min(cands.length, AI_CONFIG.searchCount);
-  let best = -9999999;
-  
-  for(let i=0;i<cnt;i++){
-    let m = cands[i];
-    board[m.x][m.y]=role;
-    let val;
-    if(checkWin(m.x,m.y,role,board)) val = SCORE.FIVE;
-    else val = -negamax(depth-1,-beta,-alpha,3-role);
-    board[m.x][m.y]=0;
-    if(isTimeout)return 0;
-    if(val>best)best=val;
-    if(best>alpha)alpha=best;
-    if(alpha>=beta)break;
-  }
-  
-  transpositionTable[hash]={v:best,d:depth,f:alpha>=beta?'cut':'exact'};
-  return best;
-}
-
-function createBoardHash(){
-  let h='';
-  for(let x=0;x<SIZE;x++)for(let y=0;y<SIZE;y++)h+=board[x][y];
-  return h;
-}
-
-function findBestMove() {
-  let cands = getCandidates(2);
-  
-  for(let m of cands){
-    board[m.x][m.y]=2;
-    if(checkWin(m.x,m.y,2,board)){board[m.x][m.y]=0;return m;}
-    board[m.x][m.y]=0;
-  }
-  
-  for(let m of cands){
-    board[m.x][m.y]=1;
-    if(checkWin(m.x,m.y,1,board)){board[m.x][m.y]=0;return m;}
-    board[m.x][m.y]=0;
-  }
-  
-  totalNodes=0; isTimeout=false;
-  deadline=Date.now()+AI_CONFIG.timeLimit;
-  currentDepth=AI_CONFIG.maxDepth;
-  
-  let best = cands[0];
-  let max = -9999999;
-  
-  for(let m of cands.slice(0,AI_CONFIG.searchCount)){
-    board[m.x][m.y]=2;
-    let v = -negamax(currentDepth-1, -9999999,9999999,1);
-    board[m.x][m.y]=0;
-    if(isTimeout)break;
-    if(v>max){max=v;best=m;}
-  }
-  
-  return best;
-}
-
-function doMove(x,y,role){
-  if(board[x][y]!==0)return false;
-  board[x][y]=role;
-  history.push({x,y,role});
-  draw();
-  
-  if(checkWin(x,y,role,board)){
-    over=true;
-    const ds=[[1,0],[0,1],[1,1],[1,-1]];
-    for(let d of ds){
-      let arr=[{x,y}];
-      for(let i=1;i<5;i++){let nx=x+d[0]*i,ny=y+d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.push({x:nx,y:ny});else break;}
-      for(let i=1;i<5;i++){let nx=x-d[0]*i,ny=y-d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.unshift({x:nx,y:ny});else break;}
-      if(arr.length>=5){winLine=arr;break;}
-    }
-    draw();
-    canvas.classList.add('win-animation');
-    setTimeout(()=>canvas.classList.remove('win-animation'),500);
-    return true;
-  }
-  
-  if(history.length>=SIZE*SIZE){
-    over=true;
-    return true;
+  for(let [dx,dy] of dirs) {
+    let c = 1;
+    for(let i=1;i<5;i++){let nx=x+dx*i,ny=y+dy*i;if(inBoard(nx,ny)&&board[nx][ny]===role)c++;else break;}
+    for(let i=1;i<5;i++){let nx=x-dx*i,ny=y-dy*i;if(inBoard(nx,ny)&&board[nx][ny]===role)c++;else break;}
+    if(c>=5) return true;
   }
   return false;
 }
 
-function aiRound(){
-  if(over)return;
-  
-  setTimeout(()=>{
-    let move=findBestMove();
-    if(move && board[move.x][move.y]===0) doMove(move.x,move.y,2);
-    if(!over) myTurn=true;
-  }, 200);
-}
+function draw() {
+  let w = canvas.width;
+  ctx.clearRect(0,0,w,w);
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 1;
 
-function handleInput(e){
-  if(over||!myTurn)return;
-  const r=canvas.getBoundingClientRect();
-  const x=Math.floor((e.clientX-r.left)/CELL);
-  const y=Math.floor((e.clientY-r.top)/CELL);
-  if(!inBoard(x,y)||board[x][y]!==0) return;
-  
-  if(doMove(x,y,1))return;
-  myTurn=false;
-  aiRound();
-}
-
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.strokeStyle="#888";ctx.lineWidth=1;
-  ctx.beginPath();
-  for(let i=0;i<SIZE;i++){
-    ctx.moveTo(15+i*30,15);ctx.lineTo(15+i*30,435);
-    ctx.moveTo(15,15+i*30);ctx.lineTo(435,15+i*30);
-  }
-  ctx.stroke();
-  
-  [3,7,11].forEach(a=>[3,7,11].forEach(b=>{
-    ctx.beginPath();ctx.arc(15+a*30,15+b*30,3,0,7);ctx.fill();
-  }));
-  
-  board.forEach((r,x)=>r.forEach((p,y)=>{
-    if(p===0)return;
-    ctx.beginPath();ctx.arc(15+x*30,15+y*30,13,0,7);
-    if(p===1)ctx.fillStyle="#000";else ctx.fillStyle="#fff";
-    ctx.fill();ctx.stroke();
-  }));
-  
-  if(history.length){
-    let last=history[history.length-1];
-    ctx.strokeStyle=last.role===1?"#4df":"#f44";ctx.lineWidth=2;
+  for(let i=0;i<=SIZE;i++){
+    let p = i*CELL;
     ctx.beginPath();
-    ctx.moveTo(15+last.x*30-5,15+last.y*30);
-    ctx.lineTo(15+last.x*30+5,15+last.y*30);
-    ctx.moveTo(15+last.x*30,15+last.y*30-5);
-    ctx.lineTo(15+last.x*30,15+last.y*30+5);
-    ctx.stroke();
+    ctx.moveTo(p,0); ctx.lineTo(p,w); ctx.stroke();
+    ctx.moveTo(0,p); ctx.lineTo(w,p); ctx.stroke();
   }
-  
-  if(winLine.length){
-    ctx.strokeStyle="rgba(255,0,0,0.8)";ctx.lineWidth=4;
-    ctx.beginPath();
-    ctx.moveTo(15+winLine[0].x*30,15+winLine[0].y*30);
-    ctx.lineTo(15+winLine[winLine.length-1].x*30,15+winLine[winLine.length-1].y*30);
-    ctx.stroke();
+
+  for(let x=0;x<SIZE;x++){
+    for(let y=0;y<SIZE;y++){
+      if(board[x][y]===0) continue;
+      ctx.beginPath();
+      ctx.arc(x*CELL+CELL/2, y*CELL+CELL/2, CELL*0.4,0,7);
+      ctx.fillStyle = board[x][y]===1 ? '#000':'#fff';
+      ctx.fill();
+      ctx.stroke();
+    }
   }
 }
 
-// 优化粒子生成：随机左右位置，不再固定顶部
-function createParticles() {
-  // 先清空旧粒子，防止重复堆积
-  particlesContainer.innerHTML = '';
-  for(let i = 0; i < 40; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    // 水平随机分布
-    particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.animationDelay = Math.random() * 12 + 's';
-    particle.style.animationDuration = (12 + Math.random() * 8) + 's';
-    particlesContainer.appendChild(particle);
-  }
-}
-
-function init(){
-  board=Array.from({length:SIZE},()=>Array(SIZE).fill(0));
-  history=[];over=false;myTurn=true;winLine=[];
-  transpositionTable={};
+function put(x,y) {
+  if(over||!myTurn||board[x][y]!==0) return;
+  board[x][y] = 1;
   draw();
+  if(checkWin(x,y,1)){over=true;return;}
+  myTurn = false;
+  setTimeout(aiMove,200);
 }
 
-canvas.addEventListener('click',handleInput);
-btnRestart.addEventListener('click',init);
+function aiMove() {
+  let best = null;
+  let max = -1;
+  for(let x=0;x<SIZE;x++){
+    for(let y=0;y<SIZE;y++){
+      if(board[x][y]!==0) continue;
+      let s = Math.random();
+      if(s>max){max=s;best={x,y};}
+    }
+  }
+  if(best){
+    board[best.x][best.y] = 2;
+    draw();
+    if(checkWin(best.x,best.y,2)) over=true;
+  }
+  myTurn = true;
+}
 
+canvas.addEventListener('click',(e)=>{
+  let r = canvas.getBoundingClientRect();
+  let x = Math.floor((e.clientX - r.left)/CELL);
+  let y = Math.floor((e.clientY - r.top)/CELL);
+  if(inBoard(x,y)) put(x,y);
+});
+
+restartBtn.onclick = () => { init(); };
+
+function createParticles() {
+  particles.innerHTML = '';
+  for(let i=0;i<30;i++){
+    let p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100+'vw';
+    p.style.animationDelay = Math.random()*10+'s';
+    particles.appendChild(p);
+  }
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 init();
 createParticles();
-})();
 </script>
+</body>
+</html>
