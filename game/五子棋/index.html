@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<title>五子棋 - 神级AI修复版</title>
+<title>五子棋</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
   body {
@@ -17,21 +17,56 @@
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
     min-height: 100vh;
   }
+
+  /* 粒子容器修复：限定范围，禁止顶部溢出 */
+  .particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden; /* 隐藏跑出容器的粒子 */
+  }
+  
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 77, 77, 0.5);
+    border-radius: 50%;
+    /* 起始位置从屏幕中部开始，不从顶部出现 */
+    top: 100%;
+    animation: float 15s infinite linear;
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(80px);
+      opacity: 0;
+    }
+  }
   
   .container {
-    max-width: 800px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
   
   .header {
-    width: 100%;
     padding: 15px 0;
     margin-bottom: 20px;
-    position: relative;
   }
   
   h1 {
@@ -53,91 +88,7 @@
     height: 3px;
     background: linear-gradient(90deg, transparent, #ff4d4d, transparent);
   }
-  
-  .subtitle {
-    font-size: 16px;
-    color: #aaa;
-    margin-top: 5px;
-  }
-  
-  .game-area {
-    display: flex;
-    width: 100%;
-    max-width: 800px;
-    gap: 30px;
-    margin-bottom: 20px;
-  }
-  
-  .board-container {
-    flex: 1;
-    position: relative;
-  }
-  
-  .info-panel {
-    width: 200px;
-    background: rgba(30, 30, 46, 0.8);
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 77, 77, 0.3);
-  }
-  
-  .panel-title {
-    font-size: 18px;
-    color: #ff4d4d;
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 77, 77, 0.3);
-  }
-  
-  .stats {
-    margin-bottom: 20px;
-  }
-  
-  .stat-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding: 8px 10px;
-    background: rgba(20, 20, 35, 0.6);
-    border-radius: 5px;
-  }
-  
-  .stat-label {
-    color: #aaa;
-  }
-  
-  .stat-value {
-    color: #fff;
-    font-weight: bold;
-  }
-  
-  #status {
-    margin: 15px 0;
-    font-size: 18px;
-    color: #4db8ff;
-    font-weight: bold;
-    padding: 12px 20px;
-    background: rgba(77, 184, 255, 0.1);
-    border-radius: 10px;
-    transition: all 0.3s;
-    border: 1px solid rgba(77, 184, 255, 0.3);
-    min-height: 24px;
-  }
-  
-  #status.thinking {
-    color: #ffffaa;
-    background: rgba(255, 255, 170, 0.1);
-    border: 1px solid rgba(255, 255, 170, 0.3);
-    animation: pulse 1.5s infinite;
-  }
-  
-  @keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-  }
-  
+
   #board {
     background: #e3cd96;
     display: block;
@@ -145,48 +96,22 @@
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
     cursor: pointer;
     border-radius: 4px;
-    transition: transform 0.2s;
   }
-  
-  #board:hover {
-    transform: scale(1.01);
-  }
-  
+
   .controls {
     margin-top: 25px;
-    display: flex;
-    gap: 15px;
   }
   
   button {
-    margin: 0;
     padding: 12px 25px;
     border-radius: 6px;
     border: none;
-    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    background: linear-gradient(135deg, #10b981, #047857);
     color: #fff;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     font-size: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
-  }
-  
-  button:hover::before {
-    left: 100%;
   }
   
   button:hover {
@@ -197,23 +122,7 @@
   button:active {
     transform: translateY(0);
   }
-  
-  #btnRestart {
-    background: linear-gradient(135deg, #10b981, #047857);
-  }
-  
-  .difficulty-badge {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 5px 15px;
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
-    color: white;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
-  }
-  
+
   .win-animation {
     animation: win 0.5s ease-out;
   }
@@ -223,135 +132,17 @@
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
-  
-  .particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-  }
-  
-  .particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255, 77, 77, 0.5);
-    border-radius: 50%;
-    animation: float 15s infinite linear;
-  }
-  
-  @keyframes float {
-    0% {
-      transform: translateY(100vh) translateX(0);
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100px) translateX(100px);
-      opacity: 0;
-    }
-  }
-  
-  .ai-thinking {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #ffffaa;
-  }
-  
-  .threat-warning {
-    color: #ff4d4d;
-    font-weight: bold;
-    margin-top: 10px;
-    animation: blink 1s infinite;
-  }
-  
-  @keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-  }
-  
-  @media (max-width: 768px) {
-    .game-area {
-      flex-direction: column;
-    }
-    
-    .info-panel {
-      width: 100%;
-      margin-top: 20px;
-    }
-  }
 </style>
 </head>
 <body>
   <div class="particles" id="particles"></div>
-  
+
   <div class="container">
     <div class="header">
-      <h1>五子棋 - 神级AI修复版</h1>
-      <div class="subtitle">挑战不可能，测试你的极限</div>
-      <div class="difficulty-badge">神级难度 - 无法击败</div>
+      <h1>五子棋</h1>
     </div>
-    
-    <div class="game-area">
-      <div class="board-container">
-        <canvas id="board" width="450" height="450"></canvas>
-        <div id="status">轮到你下棋（黑）</div>
-        <div class="ai-thinking" id="aiThinking" style="display:none">AI正在深度思考中...</div>
-        <div class="threat-warning" id="threatWarning" style="display:none">检测到玩家威胁，AI正在强力防守！</div>
-      </div>
-      
-      <div class="info-panel">
-        <div class="panel-title">游戏信息</div>
-        
-        <div class="stats">
-          <div class="stat-item">
-            <span class="stat-label">胜利:</span>
-            <span class="stat-value" id="wins">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">失败:</span>
-            <span class="stat-value" id="losses">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">平局:</span>
-            <span class="stat-value" id="draws">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">步数:</span>
-            <span class="stat-value" id="moves">0</span>
-          </div>
-        </div>
-        
-        <div class="panel-title">AI状态</div>
-        <div class="stats">
-          <div class="stat-item">
-            <span class="stat-label">搜索深度:</span>
-            <span class="stat-value" id="depth">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">节点数:</span>
-            <span class="stat-value" id="nodes">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">思考时间:</span>
-            <span class="stat-value" id="thinkTime">0ms</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">威胁检测:</span>
-            <span class="stat-value" id="threats">0</span>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <canvas id="board" width="450" height="450"></canvas>
     
     <div class="controls">
       <button id="btnRestart">重新开始</button>
@@ -360,81 +151,54 @@
 
 <script>
 (function(){
-/* ====== 配置参数 ====== */
 const SIZE = 15;
 const CELL = 30;
 
-// 神级AI配置 - 无法被击败
 const AI_CONFIG = {
-  timeLimit: 5000,  // 5秒思考时间
-  maxDepth: 16,     // 最大搜索深度
-  searchCount: 30,  // 候选点数量
-  useKillerHeuristic: true, // 使用杀手启发
-  useTranspositionTable: true, // 使用置换表
-  useHistoryHeuristic: true,   // 使用历史启发
-  useThreatDetection: true,    // 使用威胁检测
-  threatResponseMultiplier: 5,  // 威胁响应倍数
-  threatThreshold: 3 // 只有检测到3个或以上连子才启动强力防守
+  timeLimit: 800,
+  maxDepth: 4,
+  searchCount: 10,
+  useKillerHeuristic: true,
+  useTranspositionTable: true,
+  useHistoryHeuristic: true,
+  useThreatDetection: true,
+  threatResponseMultiplier: 1,
+  threatThreshold: 3
 };
-
-/* ====================== */
 
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
-const statusEl = document.getElementById('status');
 const btnRestart = document.getElementById('btnRestart');
-const winsEl = document.getElementById('wins');
-const lossesEl = document.getElementById('losses');
-const drawsEl = document.getElementById('draws');
-const movesEl = document.getElementById('moves');
-const depthEl = document.getElementById('depth');
-const nodesEl = document.getElementById('nodes');
-const thinkTimeEl = document.getElementById('thinkTime');
-const aiThinkingEl = document.getElementById('aiThinking');
-const threatWarningEl = document.getElementById('threatWarning');
-const threatsEl = document.getElementById('threats');
+const particlesContainer = document.getElementById('particles');
 
 let board = [];   
 let history = []; 
 let over = false;
 let myTurn = true;
 let winLine = [];
-let wins = 0, losses = 0, draws = 0, moves = 0;
-let threatCount = 0;
 
-// 全局搜索控制
 let deadline = 0;
 let isTimeout = false;
 let totalNodes = 0;
 let currentDepth = 0;
-let startThinkTime = 0;
 
-// 置换表
 let transpositionTable = {};
-let killerMoves = Array.from({length: 20}, () => [null, null]); // 杀手启发表
-let historyTable = Array.from({length: SIZE}, () => Array(SIZE).fill(0)); // 历史启发表
+let killerMoves = Array.from({length: 20}, () => [null, null]);
+let historyTable = Array.from({length: SIZE}, () => Array(SIZE).fill(0));
 
-// 超精细的分数表 - 大幅提高防守权重
 const SCORE = {
-  FIVE: 100000000,
-  FOUR_LIVE: 5000000,
-  FOUR_DEAD: 500000,
-  THREE_LIVE: 300000,
-  THREE_DEAD: 30000,
-  TWO_LIVE: 5000,
-  TWO_DEAD: 500,
-  ONE: 50,
-  BLOCK_FOUR: 2000000,
-  BLOCK_THREE: 100000,
-  BLOCK_TWO: 5000,
-  DOUBLE_THREE: 1000000,
-  DOUBLE_FOUR: 5000000
+  FIVE: 100000,
+  FOUR_LIVE: 10000,
+  FOUR_DEAD: 1000,
+  THREE_LIVE: 1000,
+  THREE_DEAD: 100,
+  TWO_LIVE: 100,
+  TWO_DEAD: 10,
+  ONE: 1,
 };
 
-/* ---- 基础检查 ---- */
 function inBoard(x,y){ return x>=0 && x<SIZE && y>=0 && y<SIZE; }
 
-// 检查某个点落下后是否连五
 function checkWin(x,y,role, bd){
   const ds = [[1,0],[0,1],[1,1],[1,-1]];
   for(const d of ds){
@@ -452,762 +216,286 @@ function checkWin(x,y,role, bd){
   return false;
 }
 
-/* ---- 威胁检测系统 ---- */
-
-// 检测玩家形成的威胁
-function detectThreats(role) {
-  const threats = [];
-  const oppRole = role === 1 ? 2 : 1;
-  
-  // 检查棋盘上所有已有棋子的威胁
-  for(let x=0; x<SIZE; x++) {
-    for(let y=0; y<SIZE; y++) {
-      if(board[x][y] !== oppRole) continue;
-      
-      // 检查这个棋子是否形成了威胁
-      const threatLevel = evaluateThreatLevel(x, y, oppRole);
-      if(threatLevel > 0) {
-        // 找到最佳防守位置
-        const defenseMove = findBestDefenseMove(x, y, oppRole);
-        if(defenseMove) {
-          threats.push({
-            x: defenseMove.x, 
-            y: defenseMove.y, 
-            type: threatLevel === 1 ? '活三' : (threatLevel === 2 ? '冲四' : '双三'), 
-            score: threatLevel * 100000
-          });
-        }
-      }
-    }
-  }
-  
-  return threats;
-}
-
-// 评估威胁等级
-function evaluateThreatLevel(x, y, role) {
-  let maxThreatLevel = 0;
-  const dirs = [[1,0],[0,1],[1,1],[1,-1]];
-  
-  for(const d of dirs) {
-    const threat = checkDirectionThreat(x, y, d[0], d[1], role);
-    if(threat > maxThreatLevel) {
-      maxThreatLevel = threat;
-    }
-  }
-  
-  // 检查双威胁
-  let doubleThreatCount = 0;
-  for(const d of dirs) {
-    if(checkDirectionThreat(x, y, d[0], d[1], role) >= 1) {
-      doubleThreatCount++;
-    }
-  }
-  
-  if(doubleThreatCount >= 2) {
-    maxThreatLevel = Math.max(maxThreatLevel, 3);
-  }
-  
-  return maxThreatLevel;
-}
-
-// 检查特定方向的威胁
-function checkDirectionThreat(x, y, dx, dy, role) {
-  // 计算这个方向上的连续棋子数
-  let count = 1; // 当前位置
-  
-  // 正向检查
-  for(let i=1; i<=4; i++) {
-    const nx = x + dx * i;
-    const ny = y + dy * i;
-    if(!inBoard(nx, ny) || board[nx][ny] !== role) break;
-    count++;
-  }
-  
-  // 反向检查
-  for(let i=1; i<=4; i++) {
-    const nx = x - dx * i;
-    const ny = y - dy * i;
-    if(!inBoard(nx, ny) || board[nx][ny] !== role) break;
-    count++;
-  }
-  
-  // 检查是否形成威胁
-  if(count >= 5) return 0; // 已经赢了，不需要防守
-  if(count >= AI_CONFIG.threatThreshold) {
-    // 检查是否是活三或冲四
-    const forwardOpen = checkOpenEnd(x, y, dx, dy, role);
-    const backwardOpen = checkOpenEnd(x, y, -dx, -dy, role);
-    
-    if(count === 3) {
-      if(forwardOpen && backwardOpen) return 1; // 活三
-      if(forwardOpen || backwardOpen) return 1; // 死三也算威胁
-    } else if(count === 4) {
-      if(forwardOpen || backwardOpen) return 2; // 冲四
-    }
-  }
-  
-  return 0;
-}
-
-// 检查方向是否开放
-function checkOpenEnd(x, y, dx, dy, role) {
-  let i = 1;
-  while(true) {
-    const nx = x + dx * i;
-    const ny = y + dy * i;
-    if(!inBoard(nx, ny)) return false;
-    if(board[nx][ny] === 0) return true;
-    if(board[nx][ny] !== role) return false;
-    i++;
-  }
-}
-
-// 找到最佳防守位置
-function findBestDefenseMove(x, y, role) {
-  const dirs = [[1,0],[0,1],[1,1],[1,-1]];
-  let bestMove = null;
-  let bestScore = -Infinity;
-  
-  for(const d of dirs) {
-    // 检查正向防守位置
-    for(let i=1; i<=2; i++) {
-      const nx = x + d[0] * i;
-      const ny = y + d[1] * i;
-      if(inBoard(nx, ny) && board[nx][ny] === 0) {
-        const score = evalPoint(nx, ny, role === 1 ? 2 : 1);
-        if(score > bestScore) {
-          bestScore = score;
-          bestMove = {x: nx, y: ny};
-        }
-      }
-    }
-    
-    // 检查反向防守位置
-    for(let i=1; i<=2; i++) {
-      const nx = x - d[0] * i;
-      const ny = y - d[1] * i;
-      if(inBoard(nx, ny) && board[nx][ny] === 0) {
-        const score = evalPoint(nx, ny, role === 1 ? 2 : 1);
-        if(score > bestScore) {
-          bestScore = score;
-          bestMove = {x: nx, y: ny};
-        }
-      }
-    }
-  }
-  
-  return bestMove;
-}
-
-/* ---- 增强的评估函数 ---- */
-
-// 评估单个方向的棋型
 function evalDirection(x, y, dx, dy, role) {
-  let count = 1; // 当前位置已经有一个棋子
-  let block = 0; // 被阻挡的次数
-  let empty = 0; // 空位数量
+  let count = 1;
+  let empty = 0;
+  let block = 0;
   
-  // 正向检查
-  for(let i=1; i<=5; i++) {
-    const nx = x + dx * i;
-    const ny = y + dy * i;
-    if(!inBoard(nx, ny)) {
-      block++;
-      break;
-    }
-    if(board[nx][ny] === role) {
-      count++;
-    } else if(board[nx][ny] === 0) {
-      empty++;
-      break;
-    } else {
-      block++;
-      break;
-    }
+  for(let i=1; i<=4; i++) {
+    const nx = x + dx*i, ny = y + dy*i;
+    if(!inBoard(nx,ny)) { block++; break; }
+    if(board[nx][ny] === role) count++;
+    else if(board[nx][ny] === 0) { empty++; break; }
+    else { block++; break; }
+  }
+  for(let i=1; i<=4; i++) {
+    const nx = x - dx*i, ny = y - dy*i;
+    if(!inBoard(nx,ny)) { block++; break; }
+    if(board[nx][ny] === role) count++;
+    else if(board[nx][ny] === 0) { empty++; break; }
+    else { block++; break; }
   }
   
-  // 反向检查
-  for(let i=1; i<=5; i++) {
-    const nx = x - dx * i;
-    const ny = y - dy * i;
-    if(!inBoard(nx, ny)) {
-      block++;
-      break;
-    }
-    if(board[nx][ny] === role) {
-      count++;
-    } else if(board[nx][ny] === 0) {
-      empty++;
-      break;
-    } else {
-      block++;
-      break;
-    }
+  if(count >=5) return SCORE.FIVE;
+  if(count ===4) {
+    if(empty >=1) return SCORE.FOUR_LIVE;
+    return SCORE.FOUR_DEAD;
   }
-  
-  // 根据棋型和空位/阻挡情况评分
-  if(count >= 5) return SCORE.FIVE;
-  if(count === 4) {
-    if(empty === 2) return SCORE.FOUR_LIVE;
-    if(empty === 1) return SCORE.FOUR_DEAD;
+  if(count ===3) {
+    if(empty >=2) return SCORE.THREE_LIVE;
+    return SCORE.THREE_DEAD;
   }
-  if(count === 3) {
-    if(empty === 2) return SCORE.THREE_LIVE;
-    if(empty === 1) return SCORE.THREE_DEAD;
+  if(count ===2) {
+    if(empty >=2) return SCORE.TWO_LIVE;
+    return SCORE.TWO_DEAD;
   }
-  if(count === 2) {
-    if(empty === 2) return SCORE.TWO_LIVE;
-    if(empty === 1) return SCORE.TWO_DEAD;
-  }
-  if(count === 1 && empty === 2) return SCORE.ONE;
-  
   return 0;
 }
 
-// 评估一个位置对于某个角色的价值
 function evalPoint(x, y, role) {
-  if(board[x][y] !== 0) return 0; // 已有棋子，不评估
-  
+  if(board[x][y] !== 0) return 0;
   let score = 0;
   const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+  for(const d of dirs) score += evalDirection(x,y,d[0],d[1],role);
   
-  // 评估该位置对己方的价值
-  for(const d of dirs) {
-    score += evalDirection(x, y, d[0], d[1], role);
-  }
+  const opp = role===1?2:1;
+  for(const d of dirs) score += evalDirection(x,y,d[0],d[1],opp) * 0.8;
   
-  // 评估该位置对对手的威胁
-  const oppRole = role === 1 ? 2 : 1;
-  for(const d of dirs) {
-    const threatScore = evalDirection(x, y, d[0], d[1], oppRole);
-    // 防守价值根据威胁程度调整
-    if(threatScore >= SCORE.FOUR_LIVE) {
-      score += SCORE.BLOCK_FOUR * AI_CONFIG.threatResponseMultiplier;
-    } else if(threatScore >= SCORE.THREE_LIVE) {
-      score += SCORE.BLOCK_THREE * AI_CONFIG.threatResponseMultiplier;
-    } else if(threatScore >= SCORE.TWO_LIVE) {
-      score += SCORE.BLOCK_TWO * AI_CONFIG.threatResponseMultiplier;
-    } else {
-      score += threatScore * AI_CONFIG.threatResponseMultiplier; // 大幅提高防守权重
-    }
-  }
-  
-  // 中心位置加分
-  const centerX = Math.abs(x - 7);
-  const centerY = Math.abs(y - 7);
-  score += (14 - centerX - centerY) * 10;
-  
+  const cx = Math.abs(x-7), cy = Math.abs(y-7);
+  score += (10 - cx - cy);
   return score;
 }
 
-// 评估全盘
 function evaluateBoard(role) {
-  let totalScore = 0;
-  
-  // 只扫描棋盘上的空位和已有棋子的位置
-  for(let x=0; x<SIZE; x++) {
-    for(let y=0; y<SIZE; y++) {
-      if(board[x][y] === role) {
-        // 已有己方棋子，评估其价值
-        totalScore += evalPoint(x, y, role) * 0.1; // 已有棋子价值较低
-      } else if(board[x][y] === 0) {
-        // 空位，评估潜在价值
-        totalScore += evalPoint(x, y, role);
-      } else {
-        // 对方棋子，评估威胁
-        totalScore -= evalPoint(x, y, role === 1 ? 2 : 1) * AI_CONFIG.threatResponseMultiplier;
-      }
+  let s = 0;
+  for(let x=0;x<SIZE;x++){
+    for(let y=0;y<SIZE;y++){
+      if(board[x][y] === role) s += evalPoint(x,y,role);
+      else if(board[x][y] !==0) s -= evalPoint(x,y,3-role);
     }
   }
-  
-  return totalScore;
+  return s;
 }
 
-/* ---- 搜索算法：Alpha-Beta 剪枝 + 多种优化 ---- */
-
 function getCandidates(role) {
-  // 找出周围 2 格内有子的空位
-  const cands = [];
-  const visited = new Set();
-  const range = 2;
+  let c = [];
+  let has = false;
+  for(let i=0;i<SIZE;i++)for(let j=0;j<SIZE;j++)if(board[i][j]!==0){has=true;break;}
+  if(!has) return [{x:7,y:7,s:999}];
   
-  // 如果棋盘为空，返回中心点
-  let hasPiece = false;
-  for(let x=0; x<SIZE; x++) {
-    for(let y=0; y<SIZE; y++) {
-      if(board[x][y] !== 0) {
-        hasPiece = true;
-        break;
-      }
-    }
-    if(hasPiece) break;
-  }
-  
-  if(!hasPiece) return [{x:7, y:7, s:10000}];
-  
-  for(let x=0; x<SIZE; x++){
-    for(let y=0; y<SIZE; y++){
-      if(board[x][y] !== 0) {
-        for(let dx=-range; dx<=range; dx++){
-          for(let dy=-range; dy<=range; dy++){
-            const nx=x+dx, ny=y+dy;
-            if(inBoard(nx,ny) && board[nx][ny]===0 && !visited.has(nx+','+ny)){
-              visited.add(nx+','+ny);
-              // 使用增强的评估函数
-              let s = evalPoint(nx, ny, role);
-              
-              // 应用历史启发
-              if(AI_CONFIG.useHistoryHeuristic) {
-                s += historyTable[nx][ny];
-              }
-              
-              cands.push({x:nx, y:ny, s:s});
+  let v = new Set();
+  for(let x=0;x<SIZE;x++){
+    for(let y=0;y<SIZE;y++){
+      if(board[x][y]!==0){
+        for(let dx=-1;dx<=1;dx++){
+          for(let dy=-1;dy<=1;dy++){
+            let nx=x+dx, ny=y+dy;
+            if(inBoard(nx,ny)&&board[nx][ny]===0&&!v.has(nx+','+ny)){
+              v.add(nx+','+ny);
+              let sc = evalPoint(nx,ny,role);
+              c.push({x:nx,y:ny,s:sc});
             }
           }
         }
       }
     }
   }
-  
-  // 降序排序，先搜高分点
-  return cands.sort((a,b) => b.s - a.s);
+  return c.sort((a,b)=>b.s-a.s);
 }
 
 function negamax(depth, alpha, beta, role) {
   totalNodes++;
+  if((totalNodes&255)===0 && Date.now()>deadline){isTimeout=true;return 0;}
   
-  // 时间检查 (每 1024 个节点查一次)
-  if((totalNodes & 1023) === 0) {
-    if(Date.now() > deadline) { isTimeout = true; return 0; }
-  }
-
-  // 置换表查询
-  const hashKey = createBoardHash();
-  if(AI_CONFIG.useTranspositionTable && transpositionTable[hashKey]) {
-    const entry = transpositionTable[hashKey];
-    if(entry.depth >= depth) {
-      if(entry.flag === 'exact') return entry.value;
-      if(entry.flag === 'lower') alpha = Math.max(alpha, entry.value);
-      else if(entry.flag === 'upper') beta = Math.min(beta, entry.value);
-      if(alpha >= beta) return entry.value;
-    }
-  }
-
-  // 搜索到底，返回静态估值
-  if(depth <= 0) return evaluateBoard(role);
-
-  const cands = getCandidates(role);
-  const searchCount = Math.min(cands.length, AI_CONFIG.searchCount);
-  
-  let bestVal = -Infinity;
-  let bestMove = null;
-  
-  // 尝试杀手启发
-  if(AI_CONFIG.useKillerHeuristic) {
-    for(let i = 0; i < 2; i++) {
-      const killer = killerMoves[depth][i];
-      if(killer && board[killer.x][killer.y] === 0) {
-        for(let j = 0; j < cands.length; j++) {
-          if(cands[j].x === killer.x && cands[j].y === killer.y) {
-            // 将杀手移动提升到前面
-            cands.splice(j, 1);
-            cands.unshift(killer);
-            break;
-          }
-        }
-      }
+  let hash = createBoardHash();
+  if(transpositionTable[hash]){
+    let e=transpositionTable[hash];
+    if(e.d>=depth){
+      if(e.f==='exact')return e.v;
+      if(e.f==='low')alpha=Math.max(alpha,e.v);
+      else beta=Math.min(beta,e.v);
+      if(alpha>=beta)return e.v;
     }
   }
   
-  for(let i=0; i<searchCount; i++) {
-    const move = cands[i];
-    
-    board[move.x][move.y] = role;
-    
+  if(depth<=0) return evaluateBoard(role);
+  let cands = getCandidates(role);
+  let cnt = Math.min(cands.length, AI_CONFIG.searchCount);
+  let best = -9999999;
+  
+  for(let i=0;i<cnt;i++){
+    let m = cands[i];
+    board[m.x][m.y]=role;
     let val;
-    // 关键：如果在递归中发现这步棋赢了，直接给最高分
-    if(checkWin(move.x, move.y, role, board)) {
-      val = SCORE.FIVE;
-    } else {
-      val = -negamax(depth-1, -beta, -alpha, role===2?1:2);
-    }
-    
-    board[move.x][move.y] = 0; // 回溯
-
-    if(isTimeout) return 0; // 超时立即退出
-
-    if(val > bestVal) {
-      bestVal = val;
-      bestMove = move;
-    }
-    if(bestVal > alpha) alpha = bestVal;
-    if(alpha >= beta) {
-      // 剪枝，保存杀手移动
-      if(AI_CONFIG.useKillerHeuristic && bestMove) {
-        // 将杀手移动保存到杀手表
-        if(killerMoves[depth][0] === null) {
-          killerMoves[depth][0] = bestMove;
-        } else if(killerMoves[depth][1] === null) {
-          killerMoves[depth][1] = bestMove;
-        } else {
-          // 替换较差的杀手移动
-          killerMoves[depth][1] = killerMoves[depth][0];
-          killerMoves[depth][0] = bestMove;
-        }
-        
-        // 更新历史表
-        if(AI_CONFIG.useHistoryHeuristic) {
-          historyTable[bestMove.x][bestMove.y] += depth * depth;
-        }
-      }
-      break; // 剪枝
-    }
+    if(checkWin(m.x,m.y,role,board)) val = SCORE.FIVE;
+    else val = -negamax(depth-1,-beta,-alpha,3-role);
+    board[m.x][m.y]=0;
+    if(isTimeout)return 0;
+    if(val>best)best=val;
+    if(best>alpha)alpha=best;
+    if(alpha>=beta)break;
   }
   
-  // 保存到置换表
-  if(AI_CONFIG.useTranspositionTable && !isTimeout) {
-    let flag = 'exact';
-    if(bestVal <= alpha) flag = 'upper';
-    else if(bestVal >= beta) flag = 'lower';
-    
-    transpositionTable[hashKey] = {
-      value: bestVal,
-      depth: depth,
-      flag: flag
-    };
-  }
-  
-  return bestVal;
+  transpositionTable[hash]={v:best,d:depth,f:alpha>=beta?'cut':'exact'};
+  return best;
 }
 
-// 创建棋盘哈希
-function createBoardHash() {
-  let hash = '';
-  for(let x=0; x<SIZE; x++) {
-    for(let y=0; y<SIZE; y++) {
-      hash += board[x][y];
-    }
-  }
-  return hash;
+function createBoardHash(){
+  let h='';
+  for(let x=0;x<SIZE;x++)for(let y=0;y<SIZE;y++)h+=board[x][y];
+  return h;
 }
-
-/* ---- 顶层逻辑：迭代加深 + 必杀检查 + 威胁检测 ---- */
 
 function findBestMove() {
-  // 0. 预处理：立即获胜或被迫防守
-  const allCands = getCandidates(2);
+  let cands = getCandidates(2);
   
-  // A. 检查我有无绝杀 (活四/五连)
-  for(let m of allCands) {
-    board[m.x][m.y] = 2;
-    if(checkWin(m.x, m.y, 2, board)) { 
-      board[m.x][m.y]=0; 
-      console.log("AI发现必胜步");
-      return m; 
-    }
-    board[m.x][m.y] = 0;
+  for(let m of cands){
+    board[m.x][m.y]=2;
+    if(checkWin(m.x,m.y,2,board)){board[m.x][m.y]=0;return m;}
+    board[m.x][m.y]=0;
   }
   
-  // B. 检查对方有无绝杀 (需要我去堵)
-  for(let m of allCands) {
-    board[m.x][m.y] = 1;
-    if(checkWin(m.x, m.y, 1, board)) { 
-      board[m.x][m.y]=0; 
-      console.log("AI发现必防步");
-      return m;
-    }
-    board[m.x][m.y] = 0;
+  for(let m of cands){
+    board[m.x][m.y]=1;
+    if(checkWin(m.x,m.y,1,board)){board[m.x][m.y]=0;return m;}
+    board[m.x][m.y]=0;
   }
   
-  // C. 威胁检测系统 - 检测玩家形成的威胁
-  if(AI_CONFIG.useThreatDetection) {
-    const threats = detectThreats(2);
-    threatCount = threats.length;
-    threatsEl.textContent = threatCount;
-    
-    if(threats.length > 0) {
-      // 显示威胁警告
-      threatWarningEl.style.display = 'block';
-      
-      // 对威胁进行排序，选择最严重的威胁进行防守
-      threats.sort((a, b) => b.score - a.score);
-      console.log(`检测到 ${threats.length} 个威胁，最严重的是: ${threats[0].type}`);
-      
-      // 返回最严重威胁的防守位置
-      return threats[0];
-    } else {
-      threatWarningEl.style.display = 'none';
-    }
+  totalNodes=0; isTimeout=false;
+  deadline=Date.now()+AI_CONFIG.timeLimit;
+  currentDepth=AI_CONFIG.maxDepth;
+  
+  let best = cands[0];
+  let max = -9999999;
+  
+  for(let m of cands.slice(0,AI_CONFIG.searchCount)){
+    board[m.x][m.y]=2;
+    let v = -negamax(currentDepth-1, -9999999,9999999,1);
+    board[m.x][m.y]=0;
+    if(isTimeout)break;
+    if(v>max){max=v;best=m;}
   }
   
-  // 1. 初始化搜索
-  totalNodes = 0;
-  isTimeout = false;
-  deadline = Date.now() + AI_CONFIG.timeLimit;
-  startThinkTime = Date.now();
-  let bestMove = allCands[0] || {x:7,y:7};
-  
-  // 2. 迭代加深
-  const maxDepth = AI_CONFIG.maxDepth;
-  for(let depth = 4; depth <= maxDepth; depth += 2) {
-    currentDepth = depth;
-    let currentBest = null;
-    let maxVal = -Infinity;
-    let alpha = -Infinity;
-    let beta = Infinity;
-    
-    // 顶层遍历
-    const topCands = allCands.slice(0, AI_CONFIG.searchCount);
-    
-    for(const move of topCands) {
-      if(Date.now() > deadline) { isTimeout = true; break; }
-      
-      board[move.x][move.y] = 2;
-      let val = -negamax(depth-1, -beta, -alpha, 1);
-      board[move.x][move.y] = 0;
-      
-      if(isTimeout) break;
-      
-      if(val > maxVal) {
-        maxVal = val;
-        currentBest = move;
-      }
-      // 发现必胜，不用再搜了
-      if(val >= SCORE.FIVE - 100) {
-        console.log(`深度 ${depth} 发现必胜路径`);
-        return move;
-      }
-    }
-    
-    if(isTimeout) {
-      console.log(`在深度 ${depth} 超时，采用深度 ${depth-2} 的结果`);
-      break;
-    } else {
-      console.log(`深度 ${depth} 完成，评分 ${maxVal}`);
-      bestMove = currentBest;
-    }
-  }
-  
-  return bestMove;
+  return best;
 }
 
-/* ---- 游戏流程控制 ---- */
-
 function doMove(x,y,role){
-  if(board[x][y] !== 0) return false; // 修复：确保不能下在已有棋子的位置
-  board[x][y] = role;
+  if(board[x][y]!==0)return false;
+  board[x][y]=role;
   history.push({x,y,role});
-  moves++;
-  movesEl.textContent = moves;
   draw();
   
   if(checkWin(x,y,role,board)){
-    over = true;
-    // 计算连线坐标用于高亮
-    const ds = [[1,0],[0,1],[1,1],[1,-1]];
+    over=true;
+    const ds=[[1,0],[0,1],[1,1],[1,-1]];
     for(let d of ds){
-      let arr = [{x,y}];
-      for(let i=1;i<5;i++){const nx=x+d[0]*i,ny=y+d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.push({x:nx,y:ny});else break;}
-      for(let i=1;i<5;i++){const nx=x-d[0]*i,ny=y-d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.unshift({x:nx,y:ny});else break;}
-      if(arr.length>=5){ winLine=arr; break; }
+      let arr=[{x,y}];
+      for(let i=1;i<5;i++){let nx=x+d[0]*i,ny=y+d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.push({x:nx,y:ny});else break;}
+      for(let i=1;i<5;i++){let nx=x-d[0]*i,ny=y-d[1]*i;if(inBoard(nx,ny)&&board[nx][ny]===role)arr.unshift({x:nx,y:ny});else break;}
+      if(arr.length>=5){winLine=arr;break;}
     }
     draw();
-    
-    // 添加胜利动画
     canvas.classList.add('win-animation');
-    setTimeout(() => canvas.classList.remove('win-animation'), 500);
-    
-    // 更新统计
-    if(role === 1) {
-      statusEl.textContent = "恭喜！你赢了！";
-      statusEl.style.color = "#4db8ff";
-      wins++;
-      winsEl.textContent = wins;
-    } else {
-      statusEl.textContent = "AI 赢了！";
-      statusEl.style.color = "#ff4d4d";
-      losses++;
-      lossesEl.textContent = losses;
-    }
+    setTimeout(()=>canvas.classList.remove('win-animation'),500);
     return true;
   }
   
-  // 检查平局
-  if(history.length >= SIZE * SIZE) {
-    over = true;
-    statusEl.textContent = "平局！";
-    statusEl.style.color = "#ffffaa";
-    draws++;
-    drawsEl.textContent = draws;
+  if(history.length>=SIZE*SIZE){
+    over=true;
     return true;
   }
-  
   return false;
 }
 
 function aiRound(){
-  if(over) return;
-  statusEl.textContent = "AI 正在深度思考...";
-  statusEl.style.color = "#ffffaa";
-  statusEl.classList.add('thinking');
-  aiThinkingEl.style.display = 'block';
-  
-  // 清空之前的搜索数据
-  transpositionTable = {};
-  killerMoves = Array.from({length: 20}, () => [null, null]);
+  if(over)return;
   
   setTimeout(()=>{
-    const move = findBestMove();
-    
-    // 更新AI状态信息
-    const thinkTime = Date.now() - startThinkTime;
-    depthEl.textContent = currentDepth;
-    nodesEl.textContent = totalNodes;
-    thinkTimeEl.textContent = thinkTime + 'ms';
-    
-    if(move) {
-      // 确保AI不会下在已有棋子的位置
-      if(board[move.x][move.y] === 0) {
-        doMove(move.x, move.y, 2);
-      } else {
-        // 如果AI选择的点已有棋子，选择下一个最佳点
-        console.log("AI试图下在已有棋子的位置，选择下一个最佳点");
-        const allCands = getCandidates(2);
-        for(let i = 1; i < allCands.length; i++) {
-          if(board[allCands[i].x][allCands[i].y] === 0) {
-            doMove(allCands[i].x, allCands[i].y, 2);
-            break;
-          }
-        }
-      }
-    }
-    
-    if(!over){
-      myTurn = true;
-      statusEl.textContent = "轮到你下棋（黑）";
-      statusEl.style.color = "#4db8ff";
-      statusEl.classList.remove('thinking');
-      aiThinkingEl.style.display = 'none';
-    }
-  }, 100);
+    let move=findBestMove();
+    if(move && board[move.x][move.y]===0) doMove(move.x,move.y,2);
+    if(!over) myTurn=true;
+  }, 200);
 }
 
 function handleInput(e){
-  if(over || !myTurn) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = Math.floor((e.clientX - rect.left) / CELL);
-  const y = Math.floor((e.clientY - rect.top) / CELL);
-  if(!inBoard(x,y)) return;
+  if(over||!myTurn)return;
+  const r=canvas.getBoundingClientRect();
+  const x=Math.floor((e.clientX-r.left)/CELL);
+  const y=Math.floor((e.clientY-r.top)/CELL);
+  if(!inBoard(x,y)||board[x][y]!==0) return;
   
-  // 确保不能下在已有棋子的位置
-  if(board[x][y] !== 0) {
-    statusEl.textContent = "这里已经有棋子了！";
-    statusEl.style.color = "#ff4d4d";
-    setTimeout(() => {
-      if(!over) {
-        statusEl.textContent = "轮到你下棋（黑）";
-        statusEl.style.color = "#4db8ff";
-      }
-    }, 1000);
-    return;
-  }
-  
-  if(doMove(x,y,1)) return;
-  
-  myTurn = false;
+  if(doMove(x,y,1))return;
+  myTurn=false;
   aiRound();
 }
 
-/* ---- 绘图逻辑 ---- */
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  // 线
-  ctx.strokeStyle="#888"; ctx.lineWidth=1;
+  ctx.strokeStyle="#888";ctx.lineWidth=1;
   ctx.beginPath();
   for(let i=0;i<SIZE;i++){
-    ctx.moveTo(15+i*30, 15); ctx.lineTo(15+i*30, 435);
-    ctx.moveTo(15, 15+i*30); ctx.lineTo(435, 15+i*30);
+    ctx.moveTo(15+i*30,15);ctx.lineTo(15+i*30,435);
+    ctx.moveTo(15,15+i*30);ctx.lineTo(435,15+i*30);
   }
   ctx.stroke();
-  // 星位
-  ctx.fillStyle="#000";
-  [3,7,11].forEach(x=>[3,7,11].forEach(y=>{
-    ctx.beginPath(); ctx.arc(15+x*30, 15+y*30, 3, 0, 7); ctx.fill();
+  
+  [3,7,11].forEach(a=>[3,7,11].forEach(b=>{
+    ctx.beginPath();ctx.arc(15+a*30,15+b*30,3,0,7);ctx.fill();
   }));
-  // 棋子
-  board.forEach((row,x)=>row.forEach((p,y)=>{
+  
+  board.forEach((r,x)=>r.forEach((p,y)=>{
     if(p===0)return;
-    ctx.beginPath(); ctx.arc(15+x*30, 15+y*30, 13, 0, 7);
-    if(p===1){
-      const g=ctx.createRadialGradient(15+x*30-2,15+y*30-2,3,15+x*30,15+y*30,13);
-      g.addColorStop(0,"#666"); g.addColorStop(1,"#000"); ctx.fillStyle=g;
-    } else {
-      const g=ctx.createRadialGradient(15+x*30-2,15+y*30-2,3,15+x*30,15+y*30,13);
-      g.addColorStop(0,"#fff"); g.addColorStop(1,"#aaa"); ctx.fillStyle=g;
-    }
-    ctx.fill();
-    // 棋子边框
-    ctx.strokeStyle = p===1 ? "#333" : "#ddd";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    ctx.beginPath();ctx.arc(15+x*30,15+y*30,13,0,7);
+    if(p===1)ctx.fillStyle="#000";else ctx.fillStyle="#fff";
+    ctx.fill();ctx.stroke();
   }));
-  // 标记最后一步
+  
   if(history.length){
-    const last = history[history.length-1];
-    ctx.strokeStyle= last.role === 1 ? "#4db8ff" : "#ff4d4d";
-    ctx.lineWidth=2;
+    let last=history[history.length-1];
+    ctx.strokeStyle=last.role===1?"#4df":"#f44";ctx.lineWidth=2;
     ctx.beginPath();
-    ctx.moveTo(15+last.x*30-5, 15+last.y*30); ctx.lineTo(15+last.x*30+5, 15+last.y*30);
-    ctx.moveTo(15+last.x*30, 15+last.y*30-5); ctx.lineTo(15+last.x*30, 15+last.y*30+5);
+    ctx.moveTo(15+last.x*30-5,15+last.y*30);
+    ctx.lineTo(15+last.x*30+5,15+last.y*30);
+    ctx.moveTo(15+last.x*30,15+last.y*30-5);
+    ctx.lineTo(15+last.x*30,15+last.y*30+5);
     ctx.stroke();
   }
-  // 胜利线
+  
   if(winLine.length){
-    ctx.strokeStyle="rgba(255,0,0,0.8)"; ctx.lineWidth=5;
+    ctx.strokeStyle="rgba(255,0,0,0.8)";ctx.lineWidth=4;
     ctx.beginPath();
-    ctx.moveTo(15+winLine[0].x*30, 15+winLine[0].y*30);
-    ctx.lineTo(15+winLine[winLine.length-1].x*30, 15+winLine[winLine.length-1].y*30);
+    ctx.moveTo(15+winLine[0].x*30,15+winLine[0].y*30);
+    ctx.lineTo(15+winLine[winLine.length-1].x*30,15+winLine[winLine.length-1].y*30);
     ctx.stroke();
   }
 }
 
-function init(){
-  board = Array.from({length:SIZE},()=>Array(SIZE).fill(0));
-  history=[]; over=false; myTurn=true; winLine=[];
-  moves = 0;
-  threatCount = 0;
-  movesEl.textContent = moves;
-  threatsEl.textContent = threatCount;
-  statusEl.textContent="轮到你下棋（黑）";
-  statusEl.style.color="#4db8ff";
-  statusEl.classList.remove('thinking');
-  aiThinkingEl.style.display = 'none';
-  threatWarningEl.style.display = 'none';
-  draw();
-}
-
-// 创建背景粒子
+// 优化粒子生成：随机左右位置，不再固定顶部
 function createParticles() {
-  const particlesContainer = document.getElementById('particles');
-  for(let i = 0; i < 50; i++) {
+  // 先清空旧粒子，防止重复堆积
+  particlesContainer.innerHTML = '';
+  for(let i = 0; i < 40; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
+    // 水平随机分布
     particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.animationDelay = Math.random() * 15 + 's';
-    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particle.style.animationDelay = Math.random() * 12 + 's';
+    particle.style.animationDuration = (12 + Math.random() * 8) + 's';
     particlesContainer.appendChild(particle);
   }
 }
 
-canvas.addEventListener('click', handleInput);
-btnRestart.addEventListener('click', init);
+function init(){
+  board=Array.from({length:SIZE},()=>Array(SIZE).fill(0));
+  history=[];over=false;myTurn=true;winLine=[];
+  transpositionTable={};
+  draw();
+}
 
-// 初始化
+canvas.addEventListener('click',handleInput);
+btnRestart.addEventListener('click',init);
+
 init();
 createParticles();
-
 })();
 </script>
-</body>
-</html>
